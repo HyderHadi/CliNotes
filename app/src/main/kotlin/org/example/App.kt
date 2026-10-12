@@ -1,15 +1,14 @@
 package org.example
 
-import java.io.File
 
 val notes = mutableListOf<Note>()
-val file = File("notes.json")
 
 fun main() {
 
     var command: String? = null
+    file.createNewFile()
 
-
+    notes.addAll(readFromJson(file))
     while (command?.lowercase() != "exit") {
 
         println(
@@ -19,6 +18,9 @@ fun main() {
             1 - create
             2 - edit
             3 - list
+            4 - delete
+            5 - search
+            6 - exit
             """.trimIndent()
         )
         print("type command(case insensitive): ")
@@ -50,7 +52,7 @@ fun main() {
                 println("You are editing (title: ${notes[tmpNoteIndex].title}, id: ${notes[tmpNoteIndex].id})")
                 println("-------------------------------------------------------------")
                 println("Note's Body:-")
-                println("${notes[tmpNoteIndex].text}")
+                println(notes[tmpNoteIndex].text)
                 println("-------------------------------------------------------------")
                 print("Title of the note: ")
                 val newTitle = readln().ifBlank { "Untitled" }
@@ -69,7 +71,37 @@ fun main() {
                 notes.forEach { note ->
                     println("ID: ${note.id}, Title: ${note.title}")
                     println("Note's Body:-")
-                    println("${note.text}")
+                    println(note.text)
+                    println("-------------------------------------------------------------")
+                }
+            }
+            "delete" -> {
+                print("Type note's id to delete: ")
+                val tmpId = readln().toLongOrNull()
+                if(!notes.any { it.id == tmpId}) {
+                    println("Note Doesn't Exist\n")
+                    continue
+                }
+                notes.removeAll { it.id == tmpId }
+                writeToJson(notes)
+                println("Note Deleted Successfully\n")
+            }
+            
+            "search" -> {
+                print("Search a note by title: ")
+                val tmpTitle = readln()
+                val searchResults = notes.filter { 
+                    it.title.contains(tmpTitle, ignoreCase = true)
+                }
+                if(searchResults.isEmpty()) {
+                    println("No Matching Results\n")
+                    continue
+                }
+                println("-------------------------------------------------------------")
+                searchResults.forEach { 
+                    println("ID: ${it.id}, Title: ${it.title}\n")
+                    println("Note's Body:-")
+                    println(it.text)
                     println("-------------------------------------------------------------")
                 }
             }

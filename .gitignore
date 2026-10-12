@@ -29,3 +29,7 @@ replay_pid*
 *.json
 
 *.html
+
+# Gradle
+.gradle/
+**/build/
